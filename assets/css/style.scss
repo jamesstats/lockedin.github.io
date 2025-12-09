@@ -1,0 +1,7 @@
+/* Example override for a common class */
+.wrapper {
+    /* Remove the maximum constraint */
+    max-width: initial; 
+    /* Or set a much larger maximum width */
+    /* max-width: 1400px; */ 
+} 
