@@ -1,0 +1,16 @@
+name: "my-project-website"
+navbar:
+  title: "lockin"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: about.html
+    - text: "Dashboard"
+      href: dashboard/index.html
+      
+# --- Add the exclude option here ---
+exclude: ["dashboard/.git", ".git"] 
+# --- End of added exclusion ---
+
+output_dir: _site  

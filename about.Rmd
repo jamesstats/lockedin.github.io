@@ -1,0 +1,97 @@
+---
+title: ""
+layout: single
+classes: wide
+output: html_document
+---
+
+```{r}
+library(reticulate)
+```
+
+```{python,seats, echo=FALSE, warning=FALSE, message=FALSE, results='hide'} 
+import pandas as pd
+import numpy as np 
+import matplotlib.pyplot as plt
+
+# --- Data Loading and Setup (Keep this) ---
+# Assuming the file is accessible in this script's environment
+# If running this outside of the environment where the file is, this line will still cause an error.
+df = pd.read_excel(r"C:\Users\james\OneDrive\Documents\Docs\mrp.xlsx") 
+df['Date'] = pd.to_datetime(df['Date'])
+
+# color map (Keep this)
+colors = {
+    "Conservatives": "blue",
+    "Greens": "green",
+    "Labor": "red",
+    "LibDemocrats": "orange",
+    "Others": "black",
+    "PlaidCymru": "lightgreen",
+    "ReformUK": "cyan",
+    "SNP": "yellow"
+} 
+
+# 1. Pivot the data to have Dates as the index and Parties as columns
+# This structure is necessary for easy bar plotting
+pivot_df = df.pivot_table(
+    index='Date', 
+    columns='Party', 
+    values='Seats', 
+    fill_value=0 # Fill missing data points with 0 seats (if a party is missing on a date)
+)
+
+# Use the same party order as determined by your original logic (latest seats)
+latest = df.sort_values("Date").groupby("Party").tail(1)
+order = latest.sort_values("Seats", ascending=False)["Party"].tolist()
+
+# Ensure the columns of the pivot table follow this established order
+pivot_df = pivot_df[order]
+
+# --- Plotting the Bar Chart ---
+plt.figure(figsize=(15, 8))
+
+# Define plotting parameters
+num_dates = len(pivot_df.index)
+bar_width = 0.8 / len(order) # Width of each individual party bar
+date_positions = np.arange(num_dates) # X-axis positions for the center of each date group
+
+# Iterate through each party and plot their bars across all dates
+offset = 0
+for i, party in enumerate(order):
+    
+    # Calculate the X-positions for this party's bars
+    party_positions = date_positions + (i - len(order)/2 + 0.5) * bar_width
+    
+    # Plot the bars for the current party across all dates
+    plt.bar(
+        party_positions,
+        pivot_df[party],
+        width=bar_width,
+        color=colors.get(party, "gray"),
+        label=party,
+        edgecolor='white'
+    )
+
+# --- Final Chart Customization ---
+
+# Set X-axis ticks to be the actual dates, centered on the group of bars
+plt.xticks(
+    date_positions, 
+    pivot_df.index.strftime('%Y-%m-%d'), # Format the dates nicely
+    rotation=15,  
+    ha='right'
+)
+
+plt.axhline(y=326, linestyle='--', linewidth=1.5, color='black', label='Majority (326)') 
+plt.figtext(0.01, 0.01, 'Created by james_polls|Source:FindOutNow/ElectoralCalculus,Focaldata,Moreincommon,YouGov,Survation,Stonehaven', 
+             fontsize=12, color='black', style='italic') 
+plt.xlabel('.') # No label needed for date axis
+plt.ylabel('.')
+plt.title('MRP POLLS:Westminster Seats Projections', fontsize=16, style='italic', loc='left') 
+plt.legend(title=" ", loc='upper center')
+plt.grid(axis='y', linestyle='--', alpha=0.5)
+plt.tight_layout()
+#plt.savefig(r"C:\Users\james\OneDrive\Desktop\VsCProjects\westminster\mrp", dpi = 1080) 
+plt.show() 
+```

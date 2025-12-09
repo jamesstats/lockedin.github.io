@@ -1,0 +1,8 @@
+book_filename: "dashboard"
+output_dir: docs
+delete_merged_file: true
+edit: https://jamesstats.github.io/lockedin//edit/main/%s
+view: https://jamesstats.github.io/lockedin//blob/main/%s 
+language:
+  ui:
+    chapter_name: " " 
